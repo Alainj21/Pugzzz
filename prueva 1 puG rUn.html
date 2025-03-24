@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pUg-rUn</title>
+
+    <!-- Fuente personalizada desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        body {
+            height: 100vh;
+            background-color: rgb(232, 235, 229);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contenedor {
+            width: 920px;
+            height: 280px;
+            position: relative;
+            background: linear-gradient(#377684, #776826);
+            overflow: hidden;
+            display: none;
+        }
+
+        .pUg {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: brown;
+            bottom: 20px;
+            left: 100px;
+        }
+
+        .jump {
+            animation: jump 0.5s ease-out;
+        }
+
+        @keyframes jump {
+            0% { bottom: 20px; }
+            50% { bottom: 150px; }
+            100% { bottom: 20px; }
+        }
+
+        .obstaculo {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background-color: red;
+            bottom: 20px;
+        }
+
+        /* Estilos para el menú y pantalla de Game Over */
+        .menu, .game-over {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .menu h1, .game-over h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .menu p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .menu button, .game-over button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background-color: #ff5722;
+            color: white;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .menu button:hover, .game-over button:hover {
+            background-color: #ff3d00;
+        }
+
+        .game-over {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Menú Principal -->
+    <div class="menu" id="menu">
+        <h1>Pug-Run</h1>
+        <p>Presiona "Iniciar Juego" para empezar</p>
+        <button onclick="iniciarJuego()">Iniciar Juego</button>
+    </div>
+
+    <!-- Contenedor del juego -->
+    <div class="contenedor" id="contenedor">
+        <div class="pUg" id="pUg"></div>
+    </div>
+
+    <!-- Pantalla de Game Over -->
+    <div class="game-over" id="gameOver">
+        <h1>¡Game Over!</h1>
+        <p>¿Quieres intentarlo de nuevo?</p>
+        <button onclick="reiniciarJuego()">Reintentar</button>
+        <button onclick="volverAlMenu()">Volver al menú</button>
+    </div>
+
+    <!-- 🎵 Música -->
+    <audio id="musicaMenu" loop>
+        <source src="menu.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="musicaJuego" loop>
+        <source src="juego.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="musicaGameOver">
+        <source src="gameover.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let pUg = document.getElementById("pUg");
+        let contenedor = document.getElementById("contenedor");
+        let menu = document.getElementById("menu");
+        let gameOverScreen = document.getElementById("gameOver");
+        let juegoActivo = false;
+
+        let musicaMenu = document.getElementById("musicaMenu");
+        let musicaJuego = document.getElementById("musicaJuego");
+        let musicaGameOver = document.getElementById("musicaGameOver");
+
+        window.onload = function() {
+            musicaMenu.volume = 0.5;
+            musicaMenu.play();
+        };
+
+        // Función para iniciar el juego
+        function iniciarJuego() {
+            menu.style.display = "none";
+            contenedor.style.display = "block";
+            juegoActivo = true;
+            iniciarObstaculos();
+
+            musicaMenu.pause();
+            musicaJuego.currentTime = 0;
+            musicaJuego.volume = 0.5;
+            musicaJuego.play();
+        }
+
+        // Función para hacer que el cubo salte
+        document.addEventListener("keydown", function(event) {
+            if (event.code === "Space" && juegoActivo) {
+                if (!pUg.classList.contains("jump")) {
+                    pUg.classList.add("jump");
+
+                    setTimeout(() => {
+                        pUg.classList.remove("jump");
+                    }, 500);
+                }
+            }
+        });
+
+        // Función para generar obstáculos en movimiento
+        function crearObstaculo() {
+            let obstaculo = document.createElement("div");
+            obstaculo.classList.add("obstaculo");
+            obstaculo.style.left = "920px"; // Aparece desde la derecha
+            contenedor.appendChild(obstaculo);
+
+            let velocidad = 5;
+            let intervalo = setInterval(() => {
+                if (!juegoActivo) {
+                    clearInterval(intervalo);
+                    return;
+                }
+
+                let obstPos = parseInt(obstaculo.style.left);
+                obstaculo.style.left = (obstPos - velocidad) + "px";
+
+                if (obstPos < -30) {
+                    clearInterval(intervalo);
+                    obstaculo.remove();
+                }
+
+                let pUgRect = pUg.getBoundingClientRect();
+                let obstRect = obstaculo.getBoundingClientRect();
+
+                if (
+                    pUgRect.right > obstRect.left &&
+                    pUgRect.left < obstRect.right &&
+                    pUgRect.bottom > obstRect.top
+                ) {
+                    gameOver();
+                }
+            }, 20);
+        }
+
+        // Función para reiniciar el juego después de perder
+        function gameOver() {
+            juegoActivo = false;
+            gameOverScreen.style.display = "flex";
+
+            musicaJuego.pause();
+            musicaGameOver.currentTime = 0;
+            musicaGameOver.volume = 0.6;
+            musicaGameOver.play();
+
+            document.querySelectorAll(".obstaculo").forEach(obst => obst.remove());
+        }
+
+        // Función para reiniciar el juego
+        function reiniciarJuego() {
+            gameOverScreen.style.display = "none";
+            juegoActivo = true;
+            iniciarObstaculos();
+
+            musicaGameOver.pause();
+            musicaJuego.currentTime = 0;
+            musicaJuego.play();
+        }
+
+        // Función para volver al menú principal
+        function volverAlMenu() {
+            gameOverScreen.style.display = "none";
+            contenedor.style.display = "none";
+            menu.style.display = "flex";
+
+            musicaGameOver.pause();
+            musicaMenu.currentTime = 0;
+            musicaMenu.play();
+        }
+
+        // Función para iniciar obstáculos con separación aleatoria
+        function iniciarObstaculos() {
+            let intervaloObstaculos = setInterval(() => {
+                if (juegoActivo) {
+                    crearObstaculo();
+                } else {
+                    clearInterval(intervaloObstaculos);
+                }
+            }, Math.floor(Math.random() * (2000 - 1200) + 1200)); // Entre 1.2s y 2s
+        }
+    </script>
+</body>
+</html>
