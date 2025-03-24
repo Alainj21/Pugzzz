@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pUg-rUn</title>
+
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        body {
+            height: 100vh;
+    background-image: url('musica PuG rUn/perros\ pug\ fondo\ de\ pantalla.jpeg'); /* Cambia la ruta de la imagen */
+    background-size: cover; /* Asegura que la imagen cubra toda la pantalla */
+    background-position: center; /* Centra la imagen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+        }
+
+        .contenedor {
+            width: 920px;
+            height: 280px;
+            position: relative;
+            background: url(musica\ PuG\ rUn/ColorFondo.png) no-repeat center center;
+            overflow: hidden;
+            display: none;
+            border: 5px solid black; /* Aquí añades el borde negro */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Agrega una sombra suave para darle más profundidad */
+        }
+
+        .montanas {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: auto;
+            display: flex;
+            animation: moverMontanas 5s linear infinite;
+            z-index: 1;
+        }
+        .montanas img {
+            width: 100vw;
+            height: auto;
+        }
+
+        @keyframes moverMontanas {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .camino {
+            position:absolute;
+            bottom: 0;
+            width: 200%;
+            height: auto;
+            display: flex;
+            animation: movercamino 5s linear infinite;
+            z-index: 2;
+        }
+
+        .camino img {
+          width: 100vw;  /* Se ajusta al ancho de la pantalla */
+          height: auto;
+        }  
+
+        @keyframes movercamino {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .cactus {
+            position:absolute;
+            bottom: 0;
+            width: 200%;
+            height: auto;
+            display: flex;
+            animation: movercactus 5s linear infinite;
+            z-index: 2;
+        }
+
+        .camino img {
+            width: 100vw;
+            height: auto;
+        }
+
+        @keyframes movercactus {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+
+
+        .pUg {
+            position: absolute;
+            width: 70px; /* Ajusta el tamaño según sea necesario */
+            height: auto;
+            bottom: 30px; /* Para que toque el suelo */
+            left: 100px;
+            z-index: 3;
+        }
+
+        .jump {
+            animation: jump 0.7s ease-out; /* Ahora dura más */
+        }
+
+        @keyframes jump {
+            0% { bottom: 20px; }  
+           10% { bottom: 80px; }  
+           30% { bottom: 140px; }  
+           50% { bottom: 160px; } /* Punto más alto, mantiene más tiempo */
+           70% { bottom: 140px; }  
+           100% { bottom: 20px; } /* Vuelve al suelo de forma progresiva */
+        }
+
+        .obstaculo {
+            position: absolute;
+        width: 30px; /* Puedes ajustar el tamaño */
+        height: 40px; /* Puedes ajustar el tamaño */
+        background-image: url('musica PuG rUn/Llanta.png'); /* Cambia la ruta según tu imagen */
+        background-size: auto; /* Asegura que la imagen cubra todo el área */
+        bottom: 20px; /* Ajusta la altura según necesites */
+    z-index: 2; /* Asegura que esté en el mismo plano que el pUg */
+        }
+
+        
+        .menu, .game-over {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10; /* Asegura que está encima de todo */
+        }
+
+        .menu h1, .game-over h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .menu p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .menu button, .game-over button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background-color: #ff5722;
+            color: white;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .menu button:hover, .game-over button:hover {
+            background-color: #ff3d00;
+        }
+
+        .game-over {
+            display: none;
+        }
+
+        #scoreDisplay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: block; 
+        }
+        
+        #solDecoracion {
+    position: absolute;
+    top: 20px;   /* Ajusta según lo necesites */
+    left: 50%;   /* Centra el sol horizontalmente */
+    transform: translateX(-50%); /* Ajuste fino para centrar */
+    width: 500px;  /* Ajusta el tamaño según necesites */
+    height: auto;
+    z-index: 0; /* Asegura que esté encima del fondo pero debajo del personaje */
+}
+
+
+    </style>
+</head>
+<body>
+    
+    <div class="menu" id="menu">
+        <h1>Pug-Run</h1>
+        <p>Presiona "Iniciar Juego" para empezar</p>
+        <button onclick="iniciarJuego()">Iniciar Juego</button>
+    </div>
+
+    
+    <div class="contenedor" id="contenedor">
+
+        <img src="musica PuG rUn/Correr.gif" id="pUg" class="pUg" alt="Pug corriendo">
+
+        
+        <div class="montanas" id="montanas">
+            <img src="musica PuG rUn/Montanas.png" alt="Montañas">
+            <img src="musica PuG rUn/Montanas.png" alt="Montañas">
+        </div>
+
+        <div class="camino" id="camino">
+           <img src="musica PuG rUn/camino.png" alt="C amino">
+           <img src="musica PuG rUn/camino.png" alt="C amino">
+        </div>
+        
+        <div class="cactus" id="cactus">
+            <img src="musica PuG rUn/Cactus.png" alt="cactuzo">
+            <img src="musica PuG rUn/Cactus.png" alt="cactuzo">
+        </div>
+        
+        <div class="pUg" id="pUg"></div>
+        <img src="musica PuG rUn/Sol.png" id="solDecoracion" alt="Sol">
+
+        <div id="scoreDisplay">Score: <span id="score">0</span></div>
+    </div>
+
+    
+    <div class="game-over" id="gameOver">
+        <h1>¡Game Over!</h1>
+        <p id="finalScoreText">Tu puntaje final: 0</p>
+        <p>¿Quieres intentarlo de nuevo?</p>
+        <button onclick="reiniciarJuego()">Reintentar</button>
+        <button onclick="volverAlMenu()">Volver al menú</button>
+    </div>
+
+      <!-- 🎵 Música -->
+      <audio id="musicaJuego" loop>
+        <source src="musica PuG rUn/maze.mp3.mp3" type="audio/mpeg">
+      </audio>
+
+      <audio id="sonidoGameOver">
+        <source src="musica PuG rUn/Sonido - Pacman (Game Over).mp3" type="audio/mpeg">
+      </audio>
+
+    <audio id="musicaMenuPrincipal" loop>
+        <source src="musica PuG rUn/10 - The Legend of Zelda_ Ocarina of Time Complete Soundtrack - 10 Shop.mp3" type="audio/mpeg">
+
+        <audio id="scoreSound">
+            <source src="musica PuG rUn/Score - Sound Effect for editing.mp3" type="audio/mpeg">
+      </audio>
+
+      <audio id="sonidoInicioJuego">
+        <source src="musica PuG rUn/SNK COIN SOUND 2 FOR METAL SLUG SERIES.mp3" type="audio/mpeg">
+    </audio>
+
+        <audio id="sonidoReintentar">
+            <source src="musica PuG rUn/SNK COIN SOUND 2 FOR METAL SLUG SERIES.mp3" type="audio/mpeg">
+        </audio>
+    
+
+    <script>
+        let pUg = document.getElementById("pUg");
+        let contenedor = document.getElementById("contenedor");
+        let menu = document.getElementById("menu");
+        let gameOverScreen = document.getElementById("gameOver");
+        let scoreDisplay = document.getElementById("score");
+        let scoreContainer = document.getElementById("scoreDisplay");
+        let finalScoreText = document.getElementById("finalScoreText");
+        let musicaJuego = document.getElementById("musicaJuego");
+        let sonidoGameOver = document.getElementById("sonidoGameOver");
+        let musicaMenuPrincipal = document.getElementById("musicaMenuPrincipal");
+        let scoreSound = document.getElementById("scoreSound");
+
+        let juegoActivo = false;
+        let score = 0;
+        let scoreInterval;
+        let lastScore = 0;
+
+        let montanas = document.getElementById("montanas");
+        let posX = 0;
+        let velocidadMontanas = 2;
+
+        function moverMontanas() {
+            posX -= velocidadMontanas;
+            if (posX <= -window.innerWidth) posX = 0;
+            montanas.style.transform = `translateX(${posX}px)`;
+            requestAnimationFrame(moverMontanas);
+        }
+
+        
+        
+        function iniciarJuego() {
+            // Reproducir el sonido al iniciar el juego
+           let sonidoInicioJuego = document.getElementById("sonidoInicioJuego");
+           sonidoInicioJuego.currentTime = 0; // Asegúrate de que el sonido comience desde el principio
+           sonidoInicioJuego.play().then(() => {
+           console.log("Sonido de inicio reproducido correctamente");
+           }).catch(error => {
+           console.log("Error al reproducir el sonido de inicio:", error);
+           });
+
+
+            menu.style.display = "none";
+            contenedor.style.display = "block";
+            score = 0;
+            scoreDisplay.innerText = score;
+            scoreContainer.style.display = "block";
+            document.getElementById("montanas").style.animationPlayState = "running";
+            document.getElementById("cactus").style.animationPlayState = "running";
+            document.getElementById("montanas").style.animationPlayState = "running";
+            document.getElementById("camino").style.animationPlayState = "running";
+            juegoActivo = true;
+           
+           
+            iniciarObstaculos();     
+            musicaMenuPrincipal.pause();
+            musicaMenuPrincipal.currentTime = 0;
+            musicaJuego.volume = 0.5;
+            musicaJuego.currentTime = 0;
+            musicaJuego.play();
+
+            scoreInterval = setInterval(() => {
+                if (juegoActivo) {
+                    score++;
+                    scoreDisplay.innerText = score; 
+
+                    // Reproduce el sonido cada vez que el puntaje sea un múltiplo de 100
+                if (score % 100 === 0) {
+                scoreSound.currentTime = 0; // Asegura que el sonido comience desde el principio
+                scoreSound.play(); // Reproduce el sonido
+                }
+            }
+            }, 200);
+
+            
+    let pUg = document.getElementById("pUg");
+    pUg.style.display = "block"; 
+    pUg.style.bottom = "30px"; 
+    pUg.src = "musica PuG rUn/Correr.gif"; 
+    pUg.classList.remove("jump"); 
+        
+        }
+
+        document.addEventListener("keydown", function(event) {
+    if (event.code === "Space" && juegoActivo) {
+        if (!pUg.classList.contains("jump")) {
+            pUg.classList.add("jump");
+
+            
+            pUg.src = "musica PuG rUn/Salto.gif"; 
+            setTimeout(() => {
+                pUg.classList.remove("jump");
+
+                
+                pUg.src = "musica PuG rUn/Caida.gif"; 
+
+                
+                setTimeout(() => {
+                    pUg.src = "musica PuG rUn/Correr.gif"; 
+                }, 300); 
+            }, 600); // Tiempo de salto
+        }
+    }
+});
+
+
+        function crearObstaculo() {
+            let obstaculo = document.createElement("div");
+            obstaculo.classList.add("obstaculo");
+            obstaculo.style.backgroundImage = "url('musica PuG rUn/Llanta.png')"; // Cambia la ruta según tu imagen
+    obstaculo.style.backgroundSize = "cover"; // Asegura que la imagen cubra el tamaño del div
+    obstaculo.style.width = "40px"; // Ajusta el tamaño del obstáculo
+    obstaculo.style.height = "30px"; // Ajusta el tamaño del obstáculo
+    obstaculo.style.position = "absolute";
+    obstaculo.style.bottom = "40px"; // Ajusta la altura según sea necesario
+    obstaculo.style.left = "920px"; // Comienza fuera de la pantalla a la derecha
+    contenedor.appendChild(obstaculo);
+        
+            let velocidad = 5;
+            let intervalo = setInterval(() => {
+                if (!juegoActivo) {
+                    clearInterval(intervalo);
+                    return;
+                }
+
+                let obstPos = parseInt(obstaculo.style.left);
+                obstaculo.style.left = (obstPos - velocidad) + "px";
+
+                if (obstPos < -30) {
+                    clearInterval(intervalo);
+                    obstaculo.remove();
+                }
+
+                let pUgRect = pUg.getBoundingClientRect();
+                let obstRect = obstaculo.getBoundingClientRect();
+
+                if (
+                    pUgRect.right > obstRect.left &&       // pUg tocando el lado izquierdo del obstáculo
+            pUgRect.left < obstRect.right &&       // pUg tocando el lado derecho del obstáculo
+            pUgRect.bottom > obstRect.top &&       // pUg tocando la parte superior del obstáculo
+            pUgRect.top < obstRect.bottom         // pUg tocando la parte inferior del o
+                ) {
+                    gameOver();
+                }
+            }, 20);
+        }
+
+        function gameOver() {
+            juegoActivo = false;
+            clearInterval(scoreInterval);
+            gameOverScreen.style.display = "flex";
+            musicaJuego.pause();
+            musicaJuego.currentTime = 0;
+
+            sonidoGameOver.currentTime = 0;
+            sonidoGameOver.play();
+
+            finalScoreText.innerText = `Tu puntaje final: ${score}`;
+            document.getElementById("solDecoracion").style.display = "none";
+            document.getElementById("montanas").style.animationPlayState = "paused";
+            document.querySelectorAll(".obstaculo").forEach(obst => obst.remove());
+            
+            document.getElementById("camino").style.animationPlayState = "paused"; 
+            document.getElementById("cactus").style.animationPlayState = "paused";
+
+            document.getElementById("pUg").style.display = "none";
+            
+
+            gameOverScreen.style.display = "flex";
+
+            document.querySelectorAll(".obstaculo").forEach(obst => obst.remove());
+        }
+
+        function reiniciarJuego() {
+             // Reproducir sonido de reintentar
+        let sonidoReintentar = document.getElementById("sonidoReintentar");
+       sonidoReintentar.currentTime = 0; // Asegurar que empiece desde el principio
+       sonidoReintentar.play().then(() => {
+       console.log("Sonido de reintentar reproducido correctamente");
+       }).catch(error => {
+       console.log("Error al reproducir el sonido de reintentar:", error);
+       });
+
+
+            gameOverScreen.style.display = "none";
+            juegoActivo = true;
+
+            score = 0;
+            scoreDisplay.innerText = score;
+            iniciarObstaculos();
+
+            musicaJuego.currentTime = 0;
+            musicaJuego.play();
+
+            scoreInterval = setInterval(() => {
+                if (juegoActivo) {
+                    score++;
+                    scoreDisplay.innerText = score;
+                }
+            }, 100);
+
+             // 🌞 Vuelve a mostrar el sol al reiniciar
+           document.getElementById("solDecoracion").style.display = "block";
+           document.getElementById("montanas").style.animationPlayState = "running";
+           // Reiniciar la animación del camino
+           document.getElementById("camino").style.animationPlayState = "running"; // Reanuda el movimiento del camino
+           document.getElementById("cactus").style.animationPlayState = "running";
+
+           let pUg = document.getElementById("pUg");
+    pUg.style.display = "block"; // Vuelve a mostrar el pug
+    pUg.style.bottom = "30px"; // Restablece la posición vertical del pug
+    pUg.classList.remove("jump"); // Asegúrate de que no esté en clase "jump"
+    pUg.src = "musica PuG rUn/Correr.gif"; // Cambia el GIF a "Correr"
+
+
+        }
+        function volverAlMenu() {
+            gameOverScreen.style.display = "none";
+            contenedor.style.display = "none";
+            menu.style.display = "flex";
+            musicaJuego.pause();
+           musicaJuego.currentTime = 0;
+           musicaMenuPrincipal.volume = 0.5;
+            musicaMenuPrincipal.play();
+
+                // 🌞 Vuelve a mostrar el sol al regresar al menú
+          document.getElementById("solDecoracion").style.display = "block";
+
+          let pUg = document.getElementById("pUg");
+    pUg.style.display = "block"; // Asegurarse de que el pug esté visible
+    pUg.style.bottom = "30px"; // Restablecer la posición
+    pUg.src = "musica PuG rUn/Correr.gif"; // Cambiar al GIF de correr
+
+    pUg.classList.remove("jump");
+
+
+        }
+
+        function iniciarObstaculos() {
+            let intervaloObstaculos = setInterval(() => {
+                if (juegoActivo) {
+                    crearObstaculo();
+                } else {
+                    clearInterval(intervaloObstaculos);
+                }
+            }, Math.floor(Math.random() * (4000 - 2500) + 2500));
+        }
+         window.onload = function() {
+            musicaMenuPrincipal.volume = 0;
+            musicaMenuPrincipal.play();
+        }
+    </script>
+</body>
+</html>
